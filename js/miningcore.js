@@ -46,7 +46,7 @@ var stratumAddress = "bitcoin.multipool.dev";  // Stratum address is: bitcoin.mu
 // --------------------------------------------------------------------------------------------
 // no need to change anything below here
 // --------------------------------------------------------------------------------------------
-console.log('MiningCore.WebUI : ', WebURL);		                      // Returns website URL
+console.log('Bitcoin | multipool : ', WebURL);		                      // Returns website URL
 console.log('API address used : ', API);                                      // Returns API URL
 console.log('Stratum address  : ', "stratum+tcp://" + stratumAddress + ":3052");  // Returns Stratum URL
 console.log('Page Load        : ', window.location.href);                     // Returns full URL
