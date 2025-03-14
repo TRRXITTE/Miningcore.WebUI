@@ -48,7 +48,7 @@ var stratumAddress = "bitcoin.multipool.dev";  // Stratum address is: bitcoin.mu
 // --------------------------------------------------------------------------------------------
 console.log('Bitcoin | multipool : ', WebURL);		                      // Returns website URL
 console.log('API address used : ', API);                                      // Returns API URL
-console.log('Stratum address  : ', "stratum+tcp://" + stratumAddress + ":3052");  // Returns Stratum URL
+console.log('Stratum address  : ', "stratum+tcp://" + stratumAddress);
 console.log('Page Load        : ', window.location.href);                     // Returns full URL
 
 currentPage = "index"
@@ -378,77 +378,181 @@ function loadPaymentsPage() {
       );
     });
 }
+// Load CONNECTION page content
 function loadConnectPage() {
-  console.log("Starting loadConnectPage");
-  return $.ajax({
-    url: API + "pools",
-    async: true  // Explicitly asynchronous
-  })
+  return $.ajax(API + "pools")
     .done(function(data) {
-      console.log("API pools response:", data);
       var connectPoolConfig = "";
-      var defaultPort, coinName, coinType, algorithm;
       $.each(data.pools, function(index, value) {
         if (currentPool === value.id) {
-          defaultPort = Object.keys(value.ports)[0];
-          coinName = value.coin.name || value.coin.type;
-          coinType = value.coin.type.toLowerCase();
-          algorithm = value.coin.algorithm;
 
-          connectPoolConfig += "<tr><td>Crypto Coin name</td><td>" + coinName + " (" + value.coin.type + ")</td></tr>";
-          connectPoolConfig += "<tr><td>Coin Algorithm</td><td>" + algorithm + "</td></tr>";
-          connectPoolConfig += "<tr><td>Pool Wallet</td><td><a href='" + value.addressInfoLink + "' target='_blank'>" + value.address.substring(0, 12) + " … " + value.address.substring(value.address.length - 12) + "</a></td></tr>";
-          connectPoolConfig += "<tr><td>Payout Scheme</td><td>" + value.paymentProcessing.payoutScheme + "</td></tr>";
-          connectPoolConfig += "<tr><td>Minimum Payment</td><td>" + value.paymentProcessing.minimumPayment + " " + value.coin.type + "</td></tr>";
-          connectPoolConfig += "<tr><td>Pool Fee</td><td>" + value.poolFeePercent + "%</td></tr>";
-          $.each(value.ports, function(port, options) {
-            connectPoolConfig += "<tr><td>stratum+tcp://bitcoin.multipool.dev:3052</td><td>";
-            connectPoolConfig += options.varDiff ? "Difficulty Variable / " + options.varDiff.minDiff + " ↔ " + (options.varDiff.maxDiff || "∞") : "Difficulty Static / " + options.difficulty;
-            connectPoolConfig += "</td></tr>";
-          });
+			defaultPort = Object.keys(value.ports)[0];
+        	coinName = value.coin.name;
+			coinType = value.coin.type.toLowerCase();
+			algorithm = value.coin.algorithm;
+
+			// Connect Pool config table
+			connectPoolConfig += "<tr><td>Crypto Coin name</td><td>" + coinName + " (" + value.coin.type + ") </td></tr>";
+			//connectPoolConfig += "<tr><td>Coin Family line </td><td>" + value.coin.family + "</td></tr>";
+			connectPoolConfig += "<tr><td>Coin Algorithm</td><td>" + value.coin.algorithm + "</td></tr>";
+			connectPoolConfig += '<tr><td>Pool Wallet</td><td><a href="' + value.addressInfoLink + '" target="_blank">' + value.address.substring(0, 12) + " &hellip; " + value.address.substring(value.address.length - 12) + "</a></td></tr>";
+			connectPoolConfig += "<tr><td>Payout Scheme</td><td>" + value.paymentProcessing.payoutScheme + "</td></tr>";
+			connectPoolConfig += "<tr><td>Minimum Payment</td><td>" + value.paymentProcessing.minimumPayment + " " + value.coin.type + "</td></tr>";
+			if (typeof value.paymentProcessing.minimumPaymentToPaymentId !== "undefined") {
+				connectPoolConfig += "<tr><td>Minimum Payout (to Exchange)</td><td>" + value.paymentProcessing.minimumPaymentToPaymentId + "</td></tr>";
+			}
+			connectPoolConfig += "<tr><td>Pool Fee</td><td>" + value.poolFeePercent + "%</td></tr>";
+			$.each(value.ports, function(port, options) {
+				if (options.tls === true) {
+					connectPoolConfig += "<tr><td>stratum+ssl://";
+				} else {
+					connectPoolConfig += "<tr><td>stratum+tcp://";
+				}
+				connectPoolConfig += stratumAddress + ":" + port + "</td><td>";
+				if (typeof options.varDiff !== "undefined" && options.varDiff != null) {
+					connectPoolConfig += "Difficulty Variable / " + options.varDiff.minDiff + " &harr; ";
+					if (typeof options.varDiff.maxDiff === "undefined" || options.varDiff.maxDiff == null) {
+						connectPoolConfig += "&infin; ";
+					} else {
+						connectPoolConfig += options.varDiff.maxDiff;
+					}
+				} else {
+					connectPoolConfig += "Difficulty Static / " + options.difficulty ;
+				}
+				connectPoolConfig += "</td></tr>";
+			});
+
         }
       });
-      $("#connectPoolConfig").html(connectPoolConfig || "<p>No pool data</p>");
+      connectPoolConfig += "</tbody>";
+      $("#connectPoolConfig").html(connectPoolConfig);
 
-      $("#miner-config").html("Loading miner config...");
-      $.ajax({
-        url: WebURL + "poolconfig/" + coinType + ".html",
-        async: true  // Explicitly asynchronous
-      })
-        .done(function(response) {
-          console.log("Load " + coinType + ".html: Status=success, Response=" + (response || "empty"));
-          $("#miner-config").html(
-            (response || "<p>No miner config available</p>")
-              .replace(/{{ stratumAddress }}/g, "bitcoin.multipool.dev:3052")
-              .replace(/{{ coinName }}/g, coinName || "Bitcoin")
-              .replace(/{{ algorithm }}/g, algorithm || "sha256d")
-          );
-        })
-        .fail(function(xhr) {
-          console.log("Failed " + coinType + ".html, trying default.html");
-          $.ajax({
-            url: WebURL + "poolconfig/default.html",
-            async: true  // Explicitly asynchronous
-          })
-            .done(function(responseText) {
-              console.log("Load default.html: Status=success, Response=" + (responseText || "empty"));
-              $("#miner-config").html(
-                (responseText || "<p>No default config</p>")
-                  .replace(/{{ stratumAddress }}/g, "bitcoin.multipool.dev:3052")
-                  .replace(/{{ coinName }}/g, coinName || "Bitcoin")
-                  .replace(/{{ algorithm }}/g, algorithm || "sha256d")
-              );
-            })
-            .fail(function(defaultXhr) {
-              console.log("Load default.html failed: Status=" + defaultXhr.status);
-              $("#miner-config").html("<p>Error: Miner config unavailable (Status: " + defaultXhr.status + ")</p>");
-            });
-        });
+
+	  // Connect Miner config
+	  $("#miner-config").html("");
+      $("#miner-config").load("poolconfig/" + coinType + ".html",
+        function( response, status, xhr ) {
+          if ( status == "error" ) {
+			$("#miner-config").load("poolconfig/default.html",
+			  function(responseText){
+				var config = $("#miner-config")
+                .html()
+				.replace(/{{ stratumAddress }}/g, coinType + "." + stratumAddress + ":" + defaultPort)
+				.replace(/{{ coinName }}/g, coinName)
+				.replace(/{{ aglorithm }}/g, algorithm);
+				$(this).html(config);
+			  }
+			);
+		  } else {
+			var config = $("#miner-config")
+            .html()
+            .replace(/{{ stratumAddress }}/g, coinType + "." + stratumAddress + ":" + defaultPort)
+			.replace(/{{ coinName }}/g, coinName)
+			.replace(/{{ aglorithm }}/g, algorithm);
+            $(this).html(config);
+		  }
+        }
+      );
     })
-    .fail(function(jqXHR, textStatus) {
-      console.log("API failed: " + textStatus + ", Status: " + jqXHR.status);
-      $("#connectPoolConfig").html("<p>Error: API unavailable</p>");
-      $("#miner-config").html("<p>Error: API failure</p>");
+    .fail(function() {
+      $.notify(
+        {
+          message: "Error: No response from API.<br>(loadConnectConfig)"
+        },
+        {
+          type: "danger",
+          timer: 3000
+        }
+      );
+    });
+}
+
+// Load CONNECTION page content
+function loadConnectPage() {
+  return $.ajax(API + "pools")
+    .done(function(data) {
+      var connectPoolConfig = "";
+      $.each(data.pools, function(index, value) {
+        if (currentPool === value.id) {
+
+			defaultPort = Object.keys(value.ports)[0];
+        	coinName = value.coin.name;
+			coinType = value.coin.type.toLowerCase();
+			algorithm = value.coin.algorithm;
+
+			// Connect Pool config table
+			connectPoolConfig += "<tr><td>Crypto Coin name</td><td>" + coinName + " (" + value.coin.type + ") </td></tr>";
+			//connectPoolConfig += "<tr><td>Coin Family line </td><td>" + value.coin.family + "</td></tr>";
+			connectPoolConfig += "<tr><td>Coin Algorithm</td><td>" + value.coin.algorithm + "</td></tr>";
+			connectPoolConfig += '<tr><td>Pool Wallet</td><td><a href="' + value.addressInfoLink + '" target="_blank">' + value.address.substring(0, 12) + " &hellip; " + value.address.substring(value.address.length - 12) + "</a></td></tr>";
+			connectPoolConfig += "<tr><td>Payout Scheme</td><td>" + value.paymentProcessing.payoutScheme + "</td></tr>";
+			connectPoolConfig += "<tr><td>Minimum Payment</td><td>" + value.paymentProcessing.minimumPayment + " " + value.coin.type + "</td></tr>";
+			if (typeof value.paymentProcessing.minimumPaymentToPaymentId !== "undefined") {
+				connectPoolConfig += "<tr><td>Minimum Payout (to Exchange)</td><td>" + value.paymentProcessing.minimumPaymentToPaymentId + "</td></tr>";
+			}
+			connectPoolConfig += "<tr><td>Pool Fee</td><td>" + value.poolFeePercent + "%</td></tr>";
+			$.each(value.ports, function(port, options) {
+				if (options.tls === true) {
+					connectPoolConfig += "<tr><td>stratum+ssl://";
+				} else {
+					connectPoolConfig += "<tr><td>stratum+tcp://";
+				}
+				connectPoolConfig += stratumAddress + ":" + port + "</td><td>";
+				if (typeof options.varDiff !== "undefined" && options.varDiff != null) {
+					connectPoolConfig += "Difficulty Variable / " + options.varDiff.minDiff + " &harr; ";
+					if (typeof options.varDiff.maxDiff === "undefined" || options.varDiff.maxDiff == null) {
+						connectPoolConfig += "&infin; ";
+					} else {
+						connectPoolConfig += options.varDiff.maxDiff;
+					}
+				} else {
+					connectPoolConfig += "Difficulty Static / " + options.difficulty ;
+				}
+				connectPoolConfig += "</td></tr>";
+			});
+
+        }
+      });
+      connectPoolConfig += "</tbody>";
+      $("#connectPoolConfig").html(connectPoolConfig);
+
+
+	  // Connect Miner config
+	  $("#miner-config").html("");
+      $("#miner-config").load("poolconfig/" + coinType + ".html",
+        function( response, status, xhr ) {
+          if ( status == "error" ) {
+			$("#miner-config").load("poolconfig/default.html",
+			  function(responseText){
+				var config = $("#miner-config")
+                .html()
+				.replace(/{{ stratumAddress }}/g, coinType + "." + stratumAddress + ":" + defaultPort)
+				.replace(/{{ coinName }}/g, coinName)
+				.replace(/{{ aglorithm }}/g, algorithm);
+				$(this).html(config);
+			  }
+			);
+		  } else {
+			var config = $("#miner-config")
+            .html()
+            .replace(/{{ stratumAddress }}/g, coinType + "." + stratumAddress + ":" + defaultPort)
+			.replace(/{{ coinName }}/g, coinName)
+			.replace(/{{ aglorithm }}/g, algorithm);
+            $(this).html(config);
+		  }
+        }
+      );
+    })
+    .fail(function() {
+      $.notify(
+        {
+          message: "Error: No response from API.<br>(loadConnectConfig)"
+        },
+        {
+          type: "danger",
+          timer: 3000
+        }
+      );
     });
 }
 
