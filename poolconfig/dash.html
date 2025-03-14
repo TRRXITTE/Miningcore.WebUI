@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Mining Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .bg-maroon-gradient { background: linear-gradient(45deg, #800000, #a52a2a); }
+        .bg-teal-gradient { background: linear-gradient(45deg, #008080, #20b2aa); }
+        .bg-indigo-gradient { background: linear-gradient(45deg, #4b0082, #6a5acd); }
+        .card-header h3 { color: white; margin: 0; }
+        .card-category { color: #191919; font-size: 0.9em; }
+        .config-example { background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; }
+        .tutorial-section { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <!-- POOL CONNECT PAGE -->
+    <div class="page page-connect">
+        <section class="content-header py-3">
+            <h1 class="text-center">Bitcoin Mining Dashboard <small>(BTC)</small></h1>
+        </section>
+
+
+            <!-- Tutorial Section -->
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <div class="card tutorial-section">
+                        <div class="card-header bg-teal-gradient">
+                            <h3 class="card-title"><i class="fas fa-book"></i> Mining Tutorial</h3>
+                            <p class="card-category">Step-by-step setup guide</p>
+                        </div>
+                        <div class="card-body">
+                            <h4>Getting Started</h4>
+                            <ol>
+                                <li>Select a mining pool (multipool.dev)</li>
+                                <li>Register and get your BTC wallet address</li>
+                                <li>Choose mining hardware (ASIC recommended)</li>
+                                <li>Download mining software (see below)</li>
+                                <li>Configure with pool details</li>
+                                <li>Monitor performance and earnings</li>
+                            </ol>
+                            <p class="text-muted">Tips: Ensure proper ventilation and stable internet connection.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Miner Configurations Section -->
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-indigo-gradient">
+                    <!--      <h3 class="card-title"><i class="fas fa-cogs"></i> Miner Configurations</h3> -->  
+                            <br>
+                   <!--           <p class="card-category">Most supported miner examples</p>  -->  
+                        </div>
+                        <div class="card-body" id="miner-config">
+                            <h5>CGMiner (ASIC)</h5>
+                            <pre class="config-example">
+cgminer -o stratum+tcp://bitcoin.multipool.dev:3052
+    -u YourWalletAddress.WorkerName 
+    -p x 
+    --bmminer-freq 700 
+    --api-allow W:127.0.0.1
+                            </pre>
+
+                            <h5>BFGMiner (ASIC/GPU)</h5>
+                            <pre class="config-example">
+bfgminer -o stratum+tcp://bitcoin.multipool.dev:3052
+    -u YourWalletAddress.WorkerName 
+    -p x 
+    -S all 
+    --set-device clock=850
+                            </pre>
+
+                            <h5>PhoenixMiner (GPU)</h5>
+                            <pre class="config-example">
+PhoenixMiner.exe -pool stratum+tcp://bitcoin.multipool.dev:3052
+    -wal YourWalletAddress.WorkerName 
+    -pass x 
+    -proto 1 
+    -coin btc
+                            </pre>
+
+                            <h5>EasyMiner (GUI-based)</h5>
+                            <pre class="config-example">
+GUI Settings:
+Pool: stratum+tcp://pool.example.com:3333
+Username: YourWalletAddress.WorkerName
+Password: x
+Algorithm: SHA-256
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

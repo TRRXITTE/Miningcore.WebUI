@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monero Mining Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .bg-maroon-gradient { background: linear-gradient(45deg, #800000, #a52a2a); }
+        .bg-teal-gradient { background: linear-gradient(45deg, #008080, #20b2aa); }
+        .bg-indigo-gradient { background: linear-gradient(45deg, #4b0082, #6a5acd); }
+        .card-header h3 { color: white; margin: 0; }
+        .card-category { color: #191919; font-size: 0.9em; }
+        .config-example { background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; }
+        .tutorial-section { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <!-- POOL CONNECT PAGE -->
+    <div class="page page-connect">
+        <section class="content-header py-3">
+            <h1 class="text-center">Monero Mining Dashboard <small>(XMR)</small></h1>
+        </section>
+
+        <!-- Tutorial Section -->
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card tutorial-section">
+                    <div class="card-header bg-teal-gradient">
+                        <h3 class="card-title"><i class="fas fa-book"></i> Mining Tutorial</h3>
+                        <p class="card-category">Step-by-step setup guide</p>
+                    </div>
+                    <div class="card-body">
+                        <h4>Getting Started with Monero Mining</h4>
+                        <ol>
+                            <li>Select a mining pool (e.g., multipool.dev)</li>
+                            <li>Register and get your XMR wallet address</li>
+                            <li>Choose hardware (CPU recommended, GPU optional)</li>
+                            <li>Download RandomX-compatible mining software (see below)</li>
+                            <li>Configure with pool details and difficulty settings</li>
+                            <li>Monitor performance and earnings</li>
+                        </ol>
+                        <p class="text-muted">Tips: Use high-core-count CPUs (e.g., Ryzen 9) for best results; adjust difficulty based on your hardware.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Miner Configurations Section -->
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card">
+                    <div class="card-header bg-indigo-gradient">
+                        <h3 class="card-title"><i class="fas fa-cogs"></i> Miner Configurations</h3>
+                        <p class="card-category">Examples for RandomX miners with difficulty options</p>
+                    </div>
+                    <div class="card-body" id="miner-config">
+                        <h5>XMRig (CPU/GPU) - Low Difficulty (1000+)</h5>
+                        <pre class="config-example">
+xmrig -o stratum+tcp://bitcoin.multipool.dev:3032
+    -u YourXMRWalletAddress.WorkerName 
+    -p x 
+    --randomx-mode=auto 
+    --cpu-max-threads-hint=75
+                        </pre>
+
+                        <h5>XMRig (CPU/GPU) - Medium Difficulty (10000+)</h5>
+                        <pre class="config-example">
+xmrig -o stratum+tcp://bitcoin.multipool.dev:3033
+    -u YourXMRWalletAddress.WorkerName 
+    -p x 
+    --randomx-mode=fast 
+    --cpu-max-threads-hint=85
+                        </pre>
+
+                        <h5>XMRig (CPU/GPU) - High Difficulty (200000+)</h5>
+                        <pre class="config-example">
+xmrig -o stratum+tcp://bitcoin.multipool.dev:3034
+    -u YourXMRWalletAddress.WorkerName 
+    -p x 
+    --randomx-mode=light 
+    --cpu-max-threads-hint=100
+                        </pre>
+
+                        <h5>SRBMiner-Multi (CPU/GPU)</h5>
+                        <pre class="config-example">
+srbminer-multi --algorithm randomx 
+    --pool stratum+tcp://bitcoin.multipool.dev:3033
+    --wallet YourXMRWalletAddress.WorkerName 
+    --password x 
+    --cpu-threads 8
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
