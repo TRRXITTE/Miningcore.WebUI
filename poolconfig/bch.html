@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Cash Mining Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .bg-maroon-gradient { background: linear-gradient(45deg, #800000, #a52a2a); }
+        .bg-teal-gradient { background: linear-gradient(45deg, #008080, #20b2aa); }
+        .bg-indigo-gradient { background: linear-gradient(45deg, #4b0082, #6a5acd); }
+        .card-header h3 { color: white; margin: 0; }
+        .card-category { color: #191919; font-size: 0.9em; }
+        .config-example { background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; }
+        .tutorial-section { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <!-- POOL CONNECT PAGE -->
+    <div class="page page-connect">
+        <section class="content-header py-3">
+            <h1 class="text-center">Bitcoin Cash Mining Dashboard <small>(BCH)</small></h1>
+        </section>
+
+        <!-- Tutorial Section -->
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card tutorial-section">
+                    <div class="card-header bg-teal-gradient">
+                        <h3 class="card-title"><i class="fas fa-book"></i> Mining Tutorial</h3>
+                        <p class="card-category">Step-by-step setup guide</p>
+                    </div>
+                    <div class="card-body">
+                        <h4>Getting Started with Bitcoin Cash Mining</h4>
+                        <ol>
+                            <li>Select a mining pool (e.g., btc-multipool.dev)</li>
+                            <li>Register and get your BCH wallet address</li>
+                            <li>Choose SHA-256-compatible hardware (ASICs like Antminer S19 or T17)</li>
+                            <li>Download mining software (see below)</li>
+                            <li>Configure with pool details and difficulty settings</li>
+                            <li>Monitor performance and earnings</li>
+                        </ol>
+                        <p class="text-muted">Tips: BCH uses SHA-256 like BTC and BSV; ASICs are essential due to high network difficulty.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Miner Configurations Section -->
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card">
+                    <div class="card-header bg-indigo-gradient">
+                        <h3 class="card-title"><i class="fas fa-cogs"></i> Miner Configurations</h3>
+                        <p class="card-category">Examples for SHA-256 miners with difficulty options</p>
+                    </div>
+                    <div class="card-body" id="miner-config">
+                        <h5>CGMiner (ASIC) - Variable Difficulty (0.01+)</h5>
+                        <pre class="config-example">
+cgminer --url stratum+tcp://btc-multipool.dev:3100 
+    --user YourBCHWalletAddress.WorkerName 
+    --pass x 
+    --algo sha256d
+                        </pre>
+
+                        <h5>BFGMiner (ASIC) - Variable Difficulty (0.01+)</h5>
+                        <pre class="config-example">
+bfgminer -o stratum+tcp://btc-multipool.dev:3100 
+    -u YourBCHWalletAddress.WorkerName 
+    -p x 
+    -S all --set-device antminer:clock=x0982
+                        </pre>
+
+                        <h5>Antminer Firmware (ASIC) - Variable Difficulty (0.01+)</h5>
+                        <pre class="config-example">
+Pool 1 URL: stratum+tcp://btc-multipool.dev:3100
+Pool 1 User: YourBCHWalletAddress.WorkerName
+Pool 1 Pass: x
+                        </pre>
+
+                        <h5>MultiMiner (ASIC/GPU) - Variable Difficulty (0.01+)</h5>
+                        <pre class="config-example">
+multiminer --algo sha256d 
+    --url stratum+tcp://btc-multipool.dev:3100 
+    --user YourBCHWalletAddress.WorkerName 
+    --pass x
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
